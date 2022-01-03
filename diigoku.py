@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 # A buku importer for Diigo hacked together from bits of https://github.com/shanedabes/poku
+#
+# usage: python3 diigoku.py DIIGO_APPLICATION_KEY DIIGO_USER_NAME
+#
+# Get your diigo application key here: https://www.diigo.com/api_keys/new/
 
 import sys
 import logging
