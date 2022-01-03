@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# A buku importer for Diigo hacked together from bits of https://github.com/shanedabes/poku
+
 import sys
 import logging
 import buku
@@ -10,12 +12,13 @@ from dateutil import parser
 import argparse
 import itertools
 
+logging.basicConfig(filename='diigoku.log', encoding='utf-8', level=logging.INFO, filemode='w')
+
+spinner = itertools.cycle(['-', '\\', '|', '/'])
+
 argParser = argparse.ArgumentParser( description = 'Import Diigo bookmarks into Buku')
 argParser.add_argument('key', metavar='key', type=str, help='Your Diigo application key')
 argParser.add_argument('username', metavar='username', type=str, help='Your Diigo username')
-
-
-spinner = itertools.cycle(['-', '\\', '|', '/'])
 
 key = argParser.parse_args().key
 user = argParser.parse_args().username
@@ -23,8 +26,6 @@ user = argParser.parse_args().username
 # debugging variables
 limit = -1
 count = -1
-
-logging.basicConfig(filename='diigoku.log', encoding='utf-8', level=logging.INFO, filemode='w')
 
 def buku_item_to_dict(b_item):
     """ convert buku item to universal dict """
@@ -54,29 +55,27 @@ def diigo_get_desc( item ):
     desc = f"description:\n{item.get( 'desc' )}\n" if item.get('desc') else ""
     return desc
 
-def diigo_get_comm( item ):
+def diigo_get_comm( item, sub ):
     rval = ""
     if item.get( 'comments' ):
-        rval+= "comments:\n"
         for c in item.get( 'comments' ):
-            rval += "comment\n"
-            rval += f"{c.get('content')} --{c.get('user')}, {c.get('created_at')}\n"
+            rval += '\n'
+            if sub: rval += '\t'
+            rval += f'\"{c.get("content")}\" --{c.get("user")}, {c.get("created_at")}\n'
     return rval
 
 def diigo_get_annot( item ):
     rval = ""
     if item.get( 'annotations' ):
-        rval += '\nannotations:\n'
         for a in item.get( 'annotations' ):
-            rval += "quote\n"
-            rval += f"{a.get('content')}\n"
-            rval += diigo_get_comm( a )
+            rval += f'\n\"{a.get("content")}\"\n'
+            rval += diigo_get_comm( a, sub = True )
     return rval
 
 def diigo_make_desc( item ):
     desc = diigo_get_desc( item )
     anno = diigo_get_annot( item )
-    comm = diigo_get_comm( item )
+    comm = diigo_get_comm( item, sub = False )
     rval = f"{desc}{anno}{comm}"
     return rval
 
