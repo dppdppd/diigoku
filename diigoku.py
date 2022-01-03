@@ -56,7 +56,7 @@ def no_tag(var):
 
 
 def diigo_get_desc( item ):
-    desc = f"description:\n{item.get( 'desc' )}\n" if item.get('desc') else ""
+    desc = f"{item.get( 'desc' )}\n" if item.get('desc') else ""
     return desc
 
 def diigo_get_comm( item, sub ):
