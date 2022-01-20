@@ -23,9 +23,11 @@ spinner = itertools.cycle(['-', '\\', '|', '/'])
 argParser = argparse.ArgumentParser( description = 'Import Diigo bookmarks into Buku')
 argParser.add_argument('key', metavar='key', type=str, help='Your Diigo application key')
 argParser.add_argument('username', metavar='username', type=str, help='Your Diigo username')
+argParser.add_argument('pw', metavar='pw', type=str, help='Your Diigo password')
 
 key = argParser.parse_args().key
 user = argParser.parse_args().username
+pw = argParser.parse_args().pw
 
 # debugging variables
 limit = -1
@@ -118,7 +120,7 @@ def get_bookmarks( start, count ):
         count = 100
 
     url = f'https://secure.diigo.com/api/v2/bookmarks?key={key}&user={user}&filter=all&count={count}&start={start}'
-    response = requests.get(url, auth=HTTPBasicAuth('idomagal','2diigo888'))
+    response = requests.get(url, auth=HTTPBasicAuth(user, pw))
 
     sys.stdout.write(next(spinner))   # write the next character
     sys.stdout.flush()                # flush stdout buffer (actual character display)
@@ -157,7 +159,7 @@ diigoitems = [diigo_item_to_dict(i)
               for i in diigo_bookmarks]
 
 # dedupe
-diigoitems = dict_list_ensure_unique(diigoitems)
+# diigoitems = dict_list_ensure_unique(diigoitems)
 
 # sort the results
 diigoitems = sort_dict_items(diigoitems)
